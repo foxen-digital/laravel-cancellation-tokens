@@ -2,23 +2,26 @@
 
 namespace Foxen\CancellationToken;
 
+use Carbon\Carbon;
 use Foxen\CancellationToken\Contracts\CancellationTokenContract;
+use Foxen\CancellationToken\Models\CancellationToken;
+use Illuminate\Database\Eloquent\Model;
 
 class CancellationTokenService implements CancellationTokenContract
 {
-    public function create(object $cancellable, ?object $tokenable = null, ?int $expiryMinutes = null): string
+    public function create(Model $cancellable, Model $tokenable, ?Carbon $expiresAt = null): string
     {
         // Implementation will be completed in Story 2.3
         throw new \RuntimeException('Not implemented');
     }
 
-    public function verify(string $token, ?object $cancellable = null): object
+    public function verify(string $plainToken): CancellationToken
     {
         // Implementation will be completed in Story 2.4
         throw new \RuntimeException('Not implemented');
     }
 
-    public function consume(string $token, ?object $cancellable = null): object
+    public function consume(string $plainToken): CancellationToken
     {
         // Implementation will be completed in Story 2.5
         throw new \RuntimeException('Not implemented');

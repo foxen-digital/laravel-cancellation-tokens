@@ -1,5 +1,5 @@
 # generated: 2026-03-28
-# last_updated: 2026-03-28
+# last_updated: 2026-03-28T17:00:00Z
 # project: laravel-cancellation-tokens
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-03-28 # updated by code review
+last_updated: 2026-03-28
 project: laravel-cancellation-tokens
 project_key: NOKEY
 tracking_system: file-system
@@ -48,8 +48,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Core Token Lifecycle — Create, Verify, Consume
-  epic-2: backlog
-  2-1-core-types-contract-enum-and-exception: backlog
+  epic-2: in-progress
+  2-1-core-types-contract-enum-and-exception: done
   2-2-cancellationtoken-eloquent-model: backlog
   2-3-token-creation: backlog
   2-4-token-verification: backlog
