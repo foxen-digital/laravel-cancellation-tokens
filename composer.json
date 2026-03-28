@@ -1,17 +1,17 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "foxen/laravel-cancellation-tokens",
+    "description": "A focused package to manage the full cancellation token lifecycle - generation, storage, verification, expiry, and consumption - so you never hand-roll this system again. Provides secure, single-use, time-limited, revocable tokens for cancellable workflows without login requirements. ",
     "keywords": [
-        ":vendor_name",
+        "foxen",
         "laravel",
-        ":package_slug"
+        "laravel-cancellation-tokens"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/foxen/laravel-cancellation-tokens",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "mrdth",
+            "email": "mrdth@zeventien.org",
             "role": "Developer"
         }
     ],
@@ -30,18 +30,17 @@
         "pestphp/pest-plugin-laravel": "^4.0",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^2.0",
-        "phpstan/phpstan-phpunit": "^2.0",
-        "spatie/laravel-ray": "^1.35"
+        "phpstan/phpstan-phpunit": "^2.0"
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "Foxen\\CancellationToken\\": "src/",
+            "Foxen\\CancellationToken\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "Foxen\\CancellationToken\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +62,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "Foxen\\CancellationToken\\CancellationTokenServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "CancellationToken": "Foxen\\CancellationToken\\Facades\\CancellationToken"
             }
         }
     },
