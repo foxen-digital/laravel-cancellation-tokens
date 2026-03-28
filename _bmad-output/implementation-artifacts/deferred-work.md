@@ -8,6 +8,12 @@
 - Hardcoded absolute local developer path in `_bmad/core/config.yaml` (`output_folder` contains `/home/mrdth/...` with unresolved `{project-root}` placeholder) — BMAD tooling config issue, out of scope for package development.
 - `TokenVerificationException` extends bare `Exception` with no error code, reason, or context — callers cannot distinguish between expired, already-used, not-found, and ownership-mismatch without parsing message strings. Add structured context in Story 2.x when the exception is actually thrown.
 
+## Deferred from: code review of 2-3-token-creation (2026-03-28)
+
+- **`app.key` base64 prefix not stripped before HMAC** — `config('app.key')` returns the raw `base64:<encoded>` string; using it as the HMAC key reduces entropy vs. the decoded bytes. Deferred: future enhancement will introduce a dedicated configurable hash key instead of relying solely on `app.key`.
+- **Unsaved model passed to `create()` causes null `getKey()` and DB rejection** — `create()` has no guard against un-persisted models; DB will reject the null FK. Pre-existing contract gap; document in service docblock or add guard in a future story.
+- **TestCase never sets `app.key` — all HMAC tests run against an empty key** — tests are internally consistent (both sides use the same empty key) but do not prove production-safe key handling. Address in Story 6.x test infrastructure work.
+
 ## Deferred from: code review of 2-2-cancellationtoken-eloquent-model (2026-03-28)
 
 - **`static::` in `prunable()` misdirects if model is subclassed** — `static::where(...)` will query the subclass table if called on a subclass instance. Low risk currently; address if subclassing is ever introduced.
