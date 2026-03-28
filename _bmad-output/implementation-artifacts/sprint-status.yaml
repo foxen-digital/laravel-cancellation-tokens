@@ -1,0 +1,82 @@
+# generated: 2026-03-28
+# last_updated: 2026-03-28
+# project: laravel-cancellation-tokens
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-28
+last_updated: 2026-03-28 # updated by code review
+project: laravel-cancellation-tokens
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Package Foundation — Install, Configure, Migrate
+  epic-1: in-progress
+  1-1-package-bootstrap-service-provider-config-and-migration: done
+  epic-1-retrospective: optional
+
+  # Epic 2: Core Token Lifecycle — Create, Verify, Consume
+  epic-2: backlog
+  2-1-core-types-contract-enum-and-exception: backlog
+  2-2-cancellationtoken-eloquent-model: backlog
+  2-3-token-creation: backlog
+  2-4-token-verification: backlog
+  2-5-token-consumption: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Developer API Surface — Trait, Facade, Validation Rule
+  epic-3: backlog
+  3-1-hascancellationtokens-trait: backlog
+  3-2-cancellationtoken-facade-and-service-provider-binding: backlog
+  3-3-validcancellationtoken-validation-rule: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: Event System — Observe and React to Token Lifecycle
+  epic-4: backlog
+  4-1-token-lifecycle-events: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Token Cleanup — Automated Pruning via model:prune
+  epic-5: backlog
+  5-1-prunable-token-cleanup: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Testing, Quality & Documentation
+  epic-6: backlog
+  6-1-cancellationtokenfake: backlog
+  6-2-cancellationtokenfactory: backlog
+  6-3-architecture-tests: backlog
+  6-4-readme-documentation: backlog
+  epic-6-retrospective: optional

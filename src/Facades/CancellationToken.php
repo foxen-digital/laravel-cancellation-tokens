@@ -2,15 +2,16 @@
 
 namespace Foxen\CancellationToken\Facades;
 
+use Foxen\CancellationToken\Contracts\CancellationTokenContract;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Foxen\CancellationToken\CancellationToken
+ * @see CancellationTokenContract
  */
 class CancellationToken extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Foxen\CancellationToken\CancellationToken::class;
+        return CancellationTokenContract::class;
     }
 }
