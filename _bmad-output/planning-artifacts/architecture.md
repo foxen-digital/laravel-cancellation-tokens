@@ -21,7 +21,7 @@ project_name: 'laravel-cancellation-tokens'
 user_name: 'Mrdth'
 date: '2026-03-28'
 notes:
-  - 'Project will be scaffolded using spatie/package-laravel-cancellation-tokens-laravel'
+  - 'Project will be scaffolded using spatie/package-skeleton-laravel'
 ---
 
 # Architecture Decision Document
@@ -59,7 +59,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Technical Constraints & Dependencies
 
-- **Scaffolding:** `spatie/package-laravel-cancellation-tokens-laravel` — defines directory layout, Pest test runner, Orchestra Testbench, CI pipeline; architecture decisions must align
+- **Scaffolding:** `spatie/package-skeleton-laravel` — defines directory layout, Pest test runner, Orchestra Testbench, CI pipeline; architecture decisions must align
 - **PHP 8.3+** — readonly properties, typed constants, match expressions available
 - **Laravel 12/13** — current Eloquent, event, prunable, and validation APIs
 - **Zero external dependencies** — only `illuminate/*` framework packages
@@ -82,16 +82,16 @@ PHP/Laravel Composer package — no web layer, no frontend, pure library distrib
 
 ### Starter Options Considered
 
-User-specified: `spatie/package-laravel-cancellation-tokens-laravel` (2.4k GitHub stars, actively maintained). No evaluation of alternatives required.
+User-specified: `spatie/package-skeleton-laravel` (2.4k GitHub stars, actively maintained). No evaluation of alternatives required.
 
-### Selected Starter: spatie/package-laravel-cancellation-tokens-laravel
+### Selected Starter: spatie/package-skeleton-laravel
 
 **Rationale for Selection:** Industry-standard Laravel package scaffold. Establishes conventions the Laravel community recognises, with Spatie's full tooling suite pre-wired.
 
 **Initialization Command:**
 
 ```bash
-composer create-project spatie/package-laravel-cancellation-tokens-laravel laravel-cancellation-tokens --prefer-dist
+composer create-project spatie/package-skeleton-laravel laravel-cancellation-tokens --prefer-dist
 cd laravel-cancellation-tokens
 php configure.php
 ```
@@ -204,7 +204,7 @@ Consumed by the service layer, `ValidCancellationToken` rule (for failure reason
 
 ### Infrastructure & Deployment
 
-**CI Version Matrix:** PHP 8.3 / 8.4 × Laravel 12 / 13 — pre-configured by `spatie/package-laravel-cancellation-tokens-laravel`. No changes required.
+**CI Version Matrix:** PHP 8.3 / 8.4 × Laravel 12 / 13 — pre-configured by `spatie/package-skeleton-laravel`. No changes required.
 
 **Code Quality Gates (CI):**
 - `composer test` — Pest 4.x full suite
@@ -652,4 +652,4 @@ return [
 - Dispatch events before throwing exceptions on all failure paths
 - All Pest tests use `it()` syntax and `expect()` assertions
 
-**First Implementation Story:** Scaffold the project using `spatie/package-laravel-cancellation-tokens-laravel` with Pint, PHPStan, and Dependabot enabled. Vendor namespace: `FoxenDigital\LaravelCancellationTokens`.
+**First Implementation Story:** Scaffold the project using `spatie/package-skeleton-laravel` with Pint, PHPStan, and Dependabot enabled. Vendor namespace: `FoxenDigital\LaravelCancellationTokens`.
