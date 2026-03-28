@@ -8,6 +8,12 @@
 - Hardcoded absolute local developer path in `_bmad/core/config.yaml` (`output_folder` contains `/home/mrdth/...` with unresolved `{project-root}` placeholder) — BMAD tooling config issue, out of scope for package development.
 - `TokenVerificationException` extends bare `Exception` with no error code, reason, or context — callers cannot distinguish between expired, already-used, not-found, and ownership-mismatch without parsing message strings. Add structured context in Story 2.x when the exception is actually thrown.
 
+## Deferred from: code review of 2-2-cancellationtoken-eloquent-model (2026-03-28)
+
+- **`static::` in `prunable()` misdirects if model is subclassed** — `static::where(...)` will query the subclass table if called on a subclass instance. Low risk currently; address if subclassing is ever introduced.
+- **Architecture assertions for absent `SoftDeletes`/`$fillable`** — spec anti-patterns 1 and 3 (no SoftDeletes, no $fillable) have no automated test. Add assertions to story 6-3 (architecture tests).
+- **`getTable()` re-reads config on every Eloquent call** — no `$this->table` caching; config lookup is repeated per query. Negligible at current scale; consider setting `$this->table` in the constructor if profiling reveals it as a hotspot.
+
 ## Deferred from: code review of 2-1-core-types-contract-enum-and-exception (2026-03-28)
 
 - **`CancellationToken` model mass-assignable sensitive columns** — `token`, `used_at`, `expires_at`, `tokenable_type`, `cancellable_type` are all in `$fillable`. A mass-assignment call can overwrite token hashes, mark tokens consumed, extend expiry, or redirect morphable types. Address in Story 2.2 by auditing `$fillable` and considering `$guarded`.

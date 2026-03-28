@@ -3,7 +3,10 @@
 namespace Foxen\CancellationToken\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * @property int $id
@@ -16,23 +19,65 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $used_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read Model $tokenable
+ * @property-read Model $cancellable
  */
 class CancellationToken extends Model
 {
-    protected $table = 'cancellation_tokens';
+    use Prunable;
 
-    protected $fillable = [
-        'token',
-        'tokenable_type',
-        'tokenable_id',
-        'cancellable_type',
-        'cancellable_id',
-        'expires_at',
-        'used_at',
-    ];
+    /**
+     * All columns are guarded — the service layer controls data explicitly.
+     * This prevents mass-assignment vulnerabilities on sensitive columns.
+     *
+     * @var array<int, string>
+     */
+    protected $guarded = ['*'];
 
-    protected $casts = [
-        'expires_at' => 'datetime',
-        'used_at' => 'datetime',
-    ];
+    /**
+     * Get the table name from configuration.
+     */
+    public function getTable(): string
+    {
+        return config('cancellation-tokens.table') ?: 'cancellation_tokens';
+    }
+
+    /**
+     * Get the actor (who may cancel) via polymorphic relationship.
+     */
+    public function tokenable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * Get the subject (what can be cancelled) via polymorphic relationship.
+     */
+    public function cancellable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'expires_at' => 'datetime',
+            'used_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Get the prunable model query.
+     * Tokens are pruned when expired OR consumed.
+     */
+    public function prunable(): Builder
+    {
+        return static::where('expires_at', '<', now())
+            ->orWhereNotNull('used_at');
+    }
 }
