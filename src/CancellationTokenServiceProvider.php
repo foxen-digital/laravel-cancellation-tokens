@@ -13,7 +13,8 @@ class CancellationTokenServiceProvider extends PackageServiceProvider
         $package
             ->name('cancellation-tokens')
             ->hasConfigFile()
-            ->hasMigration('create_cancellation_tokens_table');
+            ->hasMigration('create_cancellation_tokens_table')
+            ->hasTranslations();
     }
 
     public function packageBooted(): void

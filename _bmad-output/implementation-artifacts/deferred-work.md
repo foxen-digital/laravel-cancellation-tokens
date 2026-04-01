@@ -1,5 +1,9 @@
 # Deferred Work
 
+## Deferred from: code review of 3-3-validcancellationtoken-validation-rule (2026-04-01)
+
+- **Uncaught non-TokenVerificationException from `verify()`** — DB exceptions, container binding errors, and other infrastructure failures propagate unhandled through the validation rule. The rule only catches `TokenVerificationException`; anything else (e.g. `QueryException`, `BindingResolutionException`) will surface as a 500 instead of a validation error. Pre-existing concern shared with service layer; address if resilience requirements arise.
+
 ## Deferred from: code review of 3-2-cancellationtoken-facade-and-service-provider-binding (2026-04-01)
 
 - **Expiry string comparison fragile** — `toDateTimeString()` truncates to second-precision; sub-second drift between captured `$expiresAt` and DB-stored value may produce false failures. Pre-existing pattern from TraitTest.php; address in Story 6.2 (factory) or 6.3 (architecture tests).

@@ -1,5 +1,5 @@
 # generated: 2026-03-28
-# last_updated: 2026-04-01T19:00:00Z
+# last_updated: 2026-04-01T22:00:00Z
 # project: laravel-cancellation-tokens
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-04-01T19:00:00Z
+last_updated: 2026-04-01T22:00:00Z
 project: laravel-cancellation-tokens
 project_key: NOKEY
 tracking_system: file-system
@@ -60,7 +60,7 @@ development_status:
   epic-3: in-progress
   3-1-hascancellationtokens-trait: done
   3-2-cancellationtoken-facade-and-service-provider-binding: done
-  3-3-validcancellationtoken-validation-rule: backlog
+  3-3-validcancellationtoken-validation-rule: done
   epic-3-retrospective: optional
 
   # Epic 4: Event System — Observe and React to Token Lifecycle
