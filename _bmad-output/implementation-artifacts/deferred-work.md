@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of 3-2-cancellationtoken-facade-and-service-provider-binding (2026-04-01)
+
+- **Expiry string comparison fragile** — `toDateTimeString()` truncates to second-precision; sub-second drift between captured `$expiresAt` and DB-stored value may produce false failures. Pre-existing pattern from TraitTest.php; address in Story 6.2 (factory) or 6.3 (architecture tests).
+- **`beforeEach` migration include path hardcoded** — if migration file is renamed or moved, `include` silently returns false and `->up()` crashes with unhelpful TypeError. Pre-existing copy-paste from TraitTest.php.
+- **Migration `include` return not checked** — `$migration = include __DIR__...` not guarded before `->up()` call. Same root as above; address when resolving beforeEach pattern.
+- **No implementation-swapping test** — the story goal ("swap the implementation in tests") is not exercised. Deferred to Story 6.1 (CancellationTokenFake) which implements the swap mechanism.
+
 ## Deferred from: code review of 3-1-hascancellationtokens-trait (2026-04-01)
 
 - **Trait has no host type constraint** — `HasCancellationTokens` calls `$this->morphMany(...)` which requires the using class to be an Eloquent Model; PHP traits cannot enforce this. A non-Model class using the trait will fatal at runtime with no helpful error message. PHP language limitation; document in trait docblock if/when a doc story runs.
