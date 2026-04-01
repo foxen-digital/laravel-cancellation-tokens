@@ -8,6 +8,14 @@
 - Hardcoded absolute local developer path in `_bmad/core/config.yaml` (`output_folder` contains `/home/mrdth/...` with unresolved `{project-root}` placeholder) — BMAD tooling config issue, out of scope for package development.
 - `TokenVerificationException` extends bare `Exception` with no error code, reason, or context — callers cannot distinguish between expired, already-used, not-found, and ownership-mismatch without parsing message strings. Add structured context in Story 2.x when the exception is actually thrown.
 
+## Deferred from: code review of 2-5-token-consumption (2026-04-01)
+
+- **TOCTOU race condition in `consume()`** — `verify()` read and `$token->save()` are not atomic; two concurrent requests can both pass `verify()` before either sets `used_at`. No DB-level lock (`lockForUpdate()`) exists. Pre-existing architectural design; address only if concurrency safety requirements arise.
+- **SQL equality used for hash lookup in `verify()`, not `hash_equals()`** — `CancellationToken::where('token', $computedHash)->first()` compares hashes via DB `=`, not PHP `hash_equals()`. Spec prescribes this lookup strategy. Tracked in deferred issues for Story 2.4 as well.
+- **Returned model from `consume()` is in-memory only** — `used_at` is set on the PHP object and saved, but the returned instance is not refreshed from DB. DB-applied precision/casting differences (e.g. MySQL timestamp truncation) will not be reflected. Low risk; add `$token->refresh()` if strict round-trip fidelity is ever required.
+- **`app.key` empty/null silently accepted by `hash_hmac()`** — pre-existing from Story 2.3; HMAC runs with empty key without error; tests are internally consistent. Address in Story 6.x test infrastructure.
+- **Pruner deletes token between `verify()` and `save()` in `consume()`** — if model:prune runs in the narrow window between `verify()` returning and `save()` persisting `used_at`, the token may be deleted and `save()` silently re-inserts or updates 0 rows. Pre-existing architectural TOCTOU variant.
+
 ## Deferred from: code review of 2-4-token-verification (2026-04-01)
 
 - **AC 5 has no feature test** — no test asserts `hash_equals()` is used or that `===` is never used on token hashes; deferred to Story 6.3 architecture tests.

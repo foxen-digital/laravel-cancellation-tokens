@@ -74,8 +74,11 @@ class CancellationTokenService implements CancellationTokenContract
 
     public function consume(string $plainToken): CancellationToken
     {
-        // Implementation will be completed in Story 2.5
-        throw new \RuntimeException('Not implemented');
+        $token = $this->verify($plainToken);
+        $token->used_at = now();
+        $token->save();
+
+        return $token;
     }
 
     /**

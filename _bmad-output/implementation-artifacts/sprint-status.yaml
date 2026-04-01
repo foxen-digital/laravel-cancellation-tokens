@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-04-01T13:00:00Z
+last_updated: 2026-04-01T15:30:00Z
 project: laravel-cancellation-tokens
 project_key: NOKEY
 tracking_system: file-system
@@ -53,7 +53,7 @@ development_status:
   2-2-cancellationtoken-eloquent-model: done
   2-3-token-creation: done
   2-4-token-verification: done
-  2-5-token-consumption: backlog
+  2-5-token-consumption: done
   epic-2-retrospective: optional
 
   # Epic 3: Developer API Surface — Trait, Facade, Validation Rule
