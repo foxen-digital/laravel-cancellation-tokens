@@ -64,7 +64,7 @@ it('sets the reason to NotFound for a non-existent token', function () {
         return;
     }
 
-    throw new \Exception('Expected TokenVerificationException was not thrown');
+    throw new Exception('Expected TokenVerificationException was not thrown');
 });
 
 // AC 3: Expired token throws TokenVerificationException with Expired reason
@@ -102,7 +102,7 @@ it('sets the reason to Expired for an expired token', function () {
         return;
     }
 
-    throw new \Exception('Expected TokenVerificationException was not thrown');
+    throw new Exception('Expected TokenVerificationException was not thrown');
 });
 
 // AC 4: Consumed token throws TokenVerificationException with Consumed reason
@@ -140,7 +140,7 @@ it('sets the reason to Consumed for a consumed token', function () {
         return;
     }
 
-    throw new \Exception('Expected TokenVerificationException was not thrown');
+    throw new Exception('Expected TokenVerificationException was not thrown');
 });
 
 // AC 3+4 edge case: Token that is both consumed AND expired throws Consumed (not Expired)
@@ -164,7 +164,7 @@ it('throws Consumed (not Expired) for a token that is both consumed and expired'
         return;
     }
 
-    throw new \Exception('Expected TokenVerificationException was not thrown');
+    throw new Exception('Expected TokenVerificationException was not thrown');
 });
 
 // AC 6: All failure cases throw the same exception class
