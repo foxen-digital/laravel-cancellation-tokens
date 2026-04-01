@@ -1,5 +1,10 @@
 # Deferred Work
 
+## Deferred from: code review of 3-1-hascancellationtokens-trait (2026-04-01)
+
+- **Trait has no host type constraint** — `HasCancellationTokens` calls `$this->morphMany(...)` which requires the using class to be an Eloquent Model; PHP traits cannot enforce this. A non-Model class using the trait will fatal at runtime with no helpful error message. PHP language limitation; document in trait docblock if/when a doc story runs.
+- **Morph map interference** — If an application registers morph aliases via `Relation::morphMap()`, `cancellable_type` stores the alias rather than the full class name. The tests assume no morph map and assert `TestBooking::class` directly. Real-world usage with morph maps will diverge. Address in Story 6.4 (README documentation).
+
 ## Deferred from: code review of 1-1-package-bootstrap-service-provider-config-and-migration (2026-03-28)
 
 - Nullable `$tokenable` parameter vs non-nullable `morphs('tokenable')` DB columns — null $tokenable MUST be handled during implementation of story 2.3 (schema or contract adjustment)
