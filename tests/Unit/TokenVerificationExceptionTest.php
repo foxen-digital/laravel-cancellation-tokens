@@ -11,17 +11,17 @@ it('reason is accessible and returns correct enum case')
     ->expect(fn () => new TokenVerificationException(TokenVerificationFailure::Expired))
     ->reason->toBe(TokenVerificationFailure::Expired);
 
-it('has appropriate message for NotFound')
+it('has a generic message for NotFound')
     ->expect(fn () => new TokenVerificationException(TokenVerificationFailure::NotFound))
-    ->getMessage()->toBe('Token not found');
+    ->getMessage()->toBe('Token verification failed');
 
-it('has appropriate message for Expired')
+it('has a generic message for Expired')
     ->expect(fn () => new TokenVerificationException(TokenVerificationFailure::Expired))
-    ->getMessage()->toBe('Token has expired');
+    ->getMessage()->toBe('Token verification failed');
 
-it('has appropriate message for Consumed')
+it('has a generic message for Consumed')
     ->expect(fn () => new TokenVerificationException(TokenVerificationFailure::Consumed))
-    ->getMessage()->toBe('Token has already been consumed');
+    ->getMessage()->toBe('Token verification failed');
 
 it('has a public readonly reason property', function () {
     $ref = new ReflectionProperty(TokenVerificationException::class, 'reason');

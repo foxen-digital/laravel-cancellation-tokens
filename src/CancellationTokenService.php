@@ -4,6 +4,8 @@ namespace Foxen\CancellationToken;
 
 use Carbon\Carbon;
 use Foxen\CancellationToken\Contracts\CancellationTokenContract;
+use Foxen\CancellationToken\Enums\TokenVerificationFailure;
+use Foxen\CancellationToken\Exceptions\TokenVerificationException;
 use Foxen\CancellationToken\Models\CancellationToken;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -51,8 +53,23 @@ class CancellationTokenService implements CancellationTokenContract
 
     public function verify(string $plainToken): CancellationToken
     {
-        // Implementation will be completed in Story 2.4
-        throw new \RuntimeException('Not implemented');
+        $computedHash = $this->hashToken($plainToken);
+
+        $stored = CancellationToken::where('token', $computedHash)->first();
+
+        if ($stored === null) {
+            throw new TokenVerificationException(TokenVerificationFailure::NotFound);
+        }
+
+        if ($stored->used_at !== null) {
+            throw new TokenVerificationException(TokenVerificationFailure::Consumed);
+        }
+
+        if ($stored->expires_at !== null && $stored->expires_at->isPast()) {
+            throw new TokenVerificationException(TokenVerificationFailure::Expired);
+        }
+
+        return $stored;
     }
 
     public function consume(string $plainToken): CancellationToken

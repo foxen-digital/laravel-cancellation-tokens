@@ -11,11 +11,7 @@ class TokenVerificationException extends Exception
         public readonly TokenVerificationFailure $reason,
         ?\Throwable $previous = null,
     ) {
-        $message = match ($reason) {
-            TokenVerificationFailure::NotFound => 'Token not found',
-            TokenVerificationFailure::Expired => 'Token has expired',
-            TokenVerificationFailure::Consumed => 'Token has already been consumed',
-        };
+        $message = 'Token verification failed';
 
         parent::__construct($message, 0, $previous);
     }

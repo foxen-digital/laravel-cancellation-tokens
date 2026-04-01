@@ -8,6 +8,19 @@
 - Hardcoded absolute local developer path in `_bmad/core/config.yaml` (`output_folder` contains `/home/mrdth/...` with unresolved `{project-root}` placeholder) — BMAD tooling config issue, out of scope for package development.
 - `TokenVerificationException` extends bare `Exception` with no error code, reason, or context — callers cannot distinguish between expired, already-used, not-found, and ownership-mismatch without parsing message strings. Add structured context in Story 2.x when the exception is actually thrown.
 
+## Deferred from: code review of 2-4-token-verification (2026-04-01)
+
+- **AC 5 has no feature test** — no test asserts `hash_equals()` is used or that `===` is never used on token hashes; deferred to Story 6.3 architecture tests.
+- **TOCTOU race on expiry/consumption** — a token could expire or be consumed between the DB query and the status check; inherent read-then-act design; address only if concurrency safety requirements arise.
+- **Timezone handling in `isPast()`** — no test verifies behavior when app timezone differs from DB timezone; pre-existing concern, not introduced by this diff.
+- **Millisecond-precision expiry boundary** — token expiring at exactly `now()` may behave inconsistently across Carbon versions; system-level edge case, out of scope.
+- **Empty string `$plainToken` input not validated** — an empty string hashes and returns NotFound; add input validation if a future story introduces stricter API contracts.
+- **Orphaned tokenable/cancellable relationships not guarded** — `verify()` returns the model without checking related models still exist; lazy-load failure surfaces to the caller; deferred to a future story covering model lifecycle.
+- **App key rotation between creation and verification** — already tracked in Known Deferred Issues in the story; HMAC uses `config('app.key')` at runtime; key rotation silently invalidates all tokens.
+- **`RefreshDatabase` + `Schema::hasTable` guards redundant but intentional** — pre-existing pattern from TokenCreationTest.php; no action needed unless the test setup strategy is revisited.
+- **`new CancellationTokenService` constructed directly in tests** — bypasses container DI; pre-existing convention; refactor if constructor gains dependencies.
+- **Timing oracle on DB token lookup** — querying `WHERE token = $computedHash` leaks hit-vs-miss timing; the spec prescribes this lookup strategy; a lookup-by-ID + hash-compare architecture would fully mitigate but is out of scope.
+
 ## Deferred from: code review of 2-3-token-creation (2026-03-28)
 
 - **`app.key` base64 prefix not stripped before HMAC** — `config('app.key')` returns the raw `base64:<encoded>` string; using it as the HMAC key reduces entropy vs. the decoded bytes. Deferred: future enhancement will introduce a dedicated configurable hash key instead of relying solely on `app.key`.
