@@ -23,7 +23,7 @@ Secure, single-use, time-limited cancellation tokens for Laravel — without req
 - **Automatic cleanup** — `Prunable` model integrates with `model:prune` for removing expired and consumed tokens
 - **Testing support** — `CancellationTokenFake` for database-free unit tests with assertion helpers, `CancellationTokenFactory` for feature test scaffolding
 
-### Requirements
+##### Requirements
 
 - PHP 8.3+
 - Laravel 12 or 13
