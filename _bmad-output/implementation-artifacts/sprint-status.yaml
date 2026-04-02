@@ -76,7 +76,7 @@ development_status:
   # Epic 6: Testing, Quality & Documentation
   epic-6: in-progress
   6-1-cancellationtokenfake: done
-  6-2-cancellationtokenfactory: backlog
+  6-2-cancellationtokenfactory: done
   6-3-architecture-tests: backlog
   6-4-readme-documentation: backlog
   epic-6-retrospective: optional

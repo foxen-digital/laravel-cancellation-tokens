@@ -23,6 +23,7 @@ _ide_helper_models.php
 /.idea
 /.fleet
 /.vscode
+/.claude/settings.local.json
 
 # Misc
 phpunit.xml

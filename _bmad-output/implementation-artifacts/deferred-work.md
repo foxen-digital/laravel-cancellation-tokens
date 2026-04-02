@@ -1,5 +1,11 @@
 # Deferred Work
 
+## Deferred from: code review of 6-2-cancellationtokenfactory (2026-04-02)
+
+- **`app.key` passed raw to `hash_hmac` (includes `base64:` prefix)** — factory mirrors `CancellationTokenService::hashToken()` exactly; both use the raw value without decoding; consistent but reduces effective key entropy vs. decoded bytes. Pre-existing from Story 2.3.
+- **Factory defaults `tokenable_type`/`cancellable_type` to non-existent `App\Models\User`/`App\Models\Booking`** — intentional per spec design decision #1 (placeholder strings satisfy the schema); consumers must use `->for()` when relation loading is needed; loading relations on default factory records will fail.
+- **`beforeEach` migration guard pattern fragile with `RefreshDatabase`** — `Schema::hasTable` guard may prevent re-running the migration after a rollback; pre-existing pattern shared across all feature tests.
+
 ## Deferred from: code review of 6-1-cancellationtokenfake (2026-04-02)
 
 - **`makeModel()` does not set `token` or `id` attributes** — expected fake fidelity gap; callers accessing `$model->token` or `$model->id` after `verify()`/`consume()` will receive null. Address if downstream code under test relies on these fields.
