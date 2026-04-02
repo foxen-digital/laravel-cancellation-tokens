@@ -1,7 +1,7 @@
 # Laravel Cancellation Tokens
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/foxen/laravel-cancellation-tokens.svg?style=flat-square)](https://packagist.org/packages/foxen/laravel-cancellation-tokens)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/foxen/laravel-cancellation-tokens/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/foxen/laravel-cancellation-tokens/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/foxen-digital/laravel-cancellation-tokens/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/foxen-digital/laravel-cancellation-tokens/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/foxen/laravel-cancellation-tokens.svg?style=flat-square)](https://packagist.org/packages/foxen/laravel-cancellation-tokens)
 
 A focused Laravel package that manages the full cancellation token lifecycle — generation, storage, verification, expiry, and consumption — so you never hand-roll this system again.
