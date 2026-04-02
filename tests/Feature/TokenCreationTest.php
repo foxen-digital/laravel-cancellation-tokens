@@ -169,6 +169,26 @@ it('throws an exception when an explicit $expiresAt is in the past', function ()
         ->toThrow(InvalidArgumentException::class);
 });
 
+// Unsaved model guard: throws when cancellable is not persisted
+it('throws an exception when the cancellable model is not persisted', function () {
+    $service = new CancellationTokenService;
+    $user = TestUser::create();
+    $booking = new TestBooking;
+
+    expect(fn () => $service->create($booking, $user))
+        ->toThrow(InvalidArgumentException::class, '$cancellable must be a persisted model.');
+});
+
+// Unsaved model guard: throws when tokenable is not persisted
+it('throws an exception when the tokenable model is not persisted', function () {
+    $service = new CancellationTokenService;
+    $user = new TestUser;
+    $booking = TestBooking::create();
+
+    expect(fn () => $service->create($booking, $user))
+        ->toThrow(InvalidArgumentException::class, '$tokenable must be a persisted model.');
+});
+
 // Additional test: verify plain-text token is never in database
 it('never stores the plain-text token in the database', function () {
     $service = new CancellationTokenService;

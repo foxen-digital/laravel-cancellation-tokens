@@ -13,11 +13,11 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            fn(
+            fn (
                 string $modelName,
-            ) => "Foxen\\CancellationToken\\Database\\Factories\\" .
-                class_basename($modelName) .
-                "Factory",
+            ) => 'Foxen\\CancellationToken\\Database\\Factories\\'.
+                class_basename($modelName).
+                'Factory',
         );
     }
 
@@ -28,7 +28,7 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        config()->set("database.default", "testing");
-        config()->set("app.key", base64_encode(random_bytes(64)));
+        config()->set('database.default', 'testing');
+        config()->set('app.key', base64_encode(random_bytes(64)));
     }
 }

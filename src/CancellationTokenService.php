@@ -26,6 +26,14 @@ class CancellationTokenService implements CancellationTokenContract
      */
     public function create(Model $cancellable, Model $tokenable, ?Carbon $expiresAt = null): string
     {
+        if (! $cancellable->exists) {
+            throw new \InvalidArgumentException('$cancellable must be a persisted model.');
+        }
+
+        if (! $tokenable->exists) {
+            throw new \InvalidArgumentException('$tokenable must be a persisted model.');
+        }
+
         if ($expiresAt !== null && $expiresAt->isPast()) {
             throw new \InvalidArgumentException('$expiresAt must be a future timestamp.');
         }

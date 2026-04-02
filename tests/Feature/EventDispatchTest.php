@@ -205,3 +205,89 @@ it('ensures expired event token has past expires_at and exception reason is Expi
         return $event->token->expires_at->isPast();
     });
 });
+
+it('does not dispatch TokenVerified on failure paths', function () {
+    $service = new CancellationTokenService;
+    $user = TestUser::create();
+    $booking = TestBooking::create();
+
+    // NotFound path
+    Event::fake([TokenVerified::class]);
+    try {
+        $service->verify('nonexistent_token');
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::NotFound);
+    }
+    Event::assertNotDispatched(TokenVerified::class);
+
+    // Consumed path
+    $plainToken = $service->create($booking, $user);
+    $service->consume($plainToken);
+
+    Event::fake([TokenVerified::class]);
+    try {
+        $service->verify($plainToken);
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::Consumed);
+    }
+    Event::assertNotDispatched(TokenVerified::class);
+
+    // Expired path
+    $plainToken = $service->create($booking, $user);
+    $token = CancellationToken::where('cancellable_id', $booking->id)
+        ->whereNull('used_at')
+        ->first();
+    $token->expires_at = now()->subHour();
+    $token->save();
+
+    Event::fake([TokenVerified::class]);
+    try {
+        $service->verify($plainToken);
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::Expired);
+    }
+    Event::assertNotDispatched(TokenVerified::class);
+});
+
+it('does not dispatch TokenConsumed on failure paths', function () {
+    $service = new CancellationTokenService;
+    $user = TestUser::create();
+    $booking = TestBooking::create();
+
+    // NotFound path
+    Event::fake([TokenConsumed::class]);
+    try {
+        $service->consume('nonexistent_token');
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::NotFound);
+    }
+    Event::assertNotDispatched(TokenConsumed::class);
+
+    // Consumed path
+    $plainToken = $service->create($booking, $user);
+    $service->consume($plainToken);
+
+    Event::fake([TokenConsumed::class]);
+    try {
+        $service->consume($plainToken);
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::Consumed);
+    }
+    Event::assertNotDispatched(TokenConsumed::class);
+
+    // Expired path
+    $plainToken = $service->create($booking, $user);
+    $token = CancellationToken::where('cancellable_id', $booking->id)
+        ->whereNull('used_at')
+        ->first();
+    $token->expires_at = now()->subHour();
+    $token->save();
+
+    Event::fake([TokenConsumed::class]);
+    try {
+        $service->consume($plainToken);
+    } catch (TokenVerificationException $e) {
+        expect($e->reason)->toBe(TokenVerificationFailure::Expired);
+    }
+    Event::assertNotDispatched(TokenConsumed::class);
+});

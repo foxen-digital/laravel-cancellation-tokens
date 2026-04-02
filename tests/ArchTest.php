@@ -1,5 +1,7 @@
 <?php
 
+use Foxen\CancellationToken\Enums\TokenVerificationFailure;
+
 arch('it will not use debugging functions')
     ->expect(['dd', 'dump', 'ray'])
     ->each->not->toBeUsed();
@@ -67,3 +69,13 @@ arch('events are readonly classes')
     ->expect('Foxen\CancellationToken\Events')
     ->classes()
     ->toBeReadonly();
+
+// Regression guard: pin enum case set to catch unhandled additions
+it('pins TokenVerificationFailure enum cases to prevent unhandled additions', function () {
+    $cases = array_map(
+        fn (TokenVerificationFailure $case) => $case->value,
+        TokenVerificationFailure::cases(),
+    );
+
+    expect($cases)->toBe(['not_found', 'expired', 'consumed']);
+});
