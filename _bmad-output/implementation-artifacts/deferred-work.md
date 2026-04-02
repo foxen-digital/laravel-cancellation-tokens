@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of 6-1-cancellationtokenfake (2026-04-02)
+
+- **`makeModel()` does not set `token` or `id` attributes** — expected fake fidelity gap; callers accessing `$model->token` or `$model->id` after `verify()`/`consume()` will receive null. Address if downstream code under test relies on these fields.
+- **`expiresAt` exact boundary — `isPast()` returns false at exact expiry instant** — token expiring at precisely `now()` passes verification; pre-existing Carbon behavior shared with the real implementation.
+- **`fake()` does not accept pre-seeded tokens or pre-configured state** — limits testing error paths (e.g. expired token scenarios) without calling `create()` and manually manipulating test state. Add a `withTokens()`/`withConsumed()` builder pattern if needed.
+- **No `assertTokenVerified` tracking** — `verify()` calls are not recorded; tests cannot assert a token was read without being consumed. Add if verification-without-consumption assertions become a requirement.
+
 ## Deferred from: code review of 5-1-prunable-token-cleanup (2026-04-02)
 
 - **`beforeEach` lacks error handling for missing migration file** — pre-existing pattern shared across all feature tests; if the migration file is renamed, `include` returns false and `->up()` crashes with unhelpful TypeError.
