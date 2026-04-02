@@ -5,6 +5,10 @@ namespace Foxen\CancellationToken;
 use Carbon\Carbon;
 use Foxen\CancellationToken\Contracts\CancellationTokenContract;
 use Foxen\CancellationToken\Enums\TokenVerificationFailure;
+use Foxen\CancellationToken\Events\TokenConsumed;
+use Foxen\CancellationToken\Events\TokenCreated;
+use Foxen\CancellationToken\Events\TokenExpired;
+use Foxen\CancellationToken\Events\TokenVerified;
 use Foxen\CancellationToken\Exceptions\TokenVerificationException;
 use Foxen\CancellationToken\Models\CancellationToken;
 use Illuminate\Database\Eloquent\Model;
@@ -48,6 +52,8 @@ class CancellationTokenService implements CancellationTokenContract
         $token->expires_at = $expiresAt;
         $token->save();
 
+        event(new TokenCreated($token));
+
         return $plainToken;
     }
 
@@ -66,8 +72,11 @@ class CancellationTokenService implements CancellationTokenContract
         }
 
         if ($stored->expires_at !== null && $stored->expires_at->isPast()) {
+            event(new TokenExpired($stored));
             throw new TokenVerificationException(TokenVerificationFailure::Expired);
         }
+
+        event(new TokenVerified($stored));
 
         return $stored;
     }
@@ -77,6 +86,8 @@ class CancellationTokenService implements CancellationTokenContract
         $token = $this->verify($plainToken);
         $token->used_at = now();
         $token->save();
+
+        event(new TokenConsumed($token));
 
         return $token;
     }

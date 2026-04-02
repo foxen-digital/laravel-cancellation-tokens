@@ -1,5 +1,12 @@
 # Deferred Work
 
+## Deferred from: code review of 4-1-token-lifecycle-events (2026-04-02)
+
+- **`readonly` event classes expose mutable Eloquent model payload** — `readonly` only prevents property reassignment; listeners can call `$event->token->used_at = null; $event->token->save()` and corrupt state. Inherent to how Laravel events carry Eloquent models; address if immutability guarantees become a requirement (e.g. by dispatching a DTO/value object snapshot instead of the live model).
+- **No negative test: `TokenVerified` NOT dispatched on failure paths** — NotFound, Consumed, and Expired failure paths have no assertion that `TokenVerified` is absent. A regression moving the dispatch call above a guard would go undetected. Add in Story 6.3 (architecture tests) or a dedicated regression test pass.
+- **No negative test: `TokenConsumed` NOT dispatched on failure paths** — parallel gap for `TokenConsumed`; same risk profile and mitigation as above.
+- **No `ShouldDispatchAfterCommit` interface on event classes** — if a caller wraps `create()` or `consume()` in a DB transaction, events fire before the transaction commits; queue workers handling the event may not yet see the token in the DB. Low risk for current usage; add interface if queue-driven listeners are introduced.
+
 ## Deferred from: code review of 3-3-validcancellationtoken-validation-rule (2026-04-01)
 
 - **Uncaught non-TokenVerificationException from `verify()`** — DB exceptions, container binding errors, and other infrastructure failures propagate unhandled through the validation rule. The rule only catches `TokenVerificationException`; anything else (e.g. `QueryException`, `BindingResolutionException`) will surface as a 500 instead of a validation error. Pre-existing concern shared with service layer; address if resilience requirements arise.
