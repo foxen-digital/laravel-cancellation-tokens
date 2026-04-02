@@ -1,5 +1,15 @@
 # Deferred Work
 
+## Deferred from: code review of 5-1-prunable-token-cleanup (2026-04-02)
+
+- **`beforeEach` lacks error handling for missing migration file** — pre-existing pattern shared across all feature tests; if the migration file is renamed, `include` returns false and `->up()` crashes with unhelpful TypeError.
+- **`expires_at = now()` boundary condition not tested** — strict `<` semantics make the expected behavior clear; not required by spec. Address if edge-case precision requirements arise.
+- **Token both expired AND consumed has no dedicated test** — covered implicitly by the mixed-scenario test via OR semantics; add an explicit test if the prunable query changes to use AND or more complex logic.
+- **No model event assertions (`pruning`/`pruned`)** — out of scope for story 5.1; no AC requires event dispatch. Add in Story 6.3 if event coverage is required.
+- **No test asserting "no custom Artisan command" exists** — verified manually by the dev; belongs in Story 6.3 architecture tests.
+- **AC3 chunk test proves the API parameter, not actual DB-level chunking** — a small chunk size with 5 tokens proves the API accepts the parameter; actual per-chunk query behavior is a framework guarantee from Laravel's `Prunable` trait. Only addressable via DB-query spying.
+- **`test_users`/`test_bookings` fixture tables have only `id` column** — pre-existing pattern; would need updating if fixture models require additional columns.
+
 ## Deferred from: code review of 4-1-token-lifecycle-events (2026-04-02)
 
 - **`readonly` event classes expose mutable Eloquent model payload** — `readonly` only prevents property reassignment; listeners can call `$event->token->used_at = null; $event->token->save()` and corrupt state. Inherent to how Laravel events carry Eloquent models; address if immutability guarantees become a requirement (e.g. by dispatching a DTO/value object snapshot instead of the live model).

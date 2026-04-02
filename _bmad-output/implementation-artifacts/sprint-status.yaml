@@ -69,8 +69,8 @@ development_status:
   epic-4-retrospective: optional
 
   # Epic 5: Token Cleanup — Automated Pruning via model:prune
-  epic-5: backlog
-  5-1-prunable-token-cleanup: backlog
+  epic-5: in-progress
+  5-1-prunable-token-cleanup: done
   epic-5-retrospective: optional
 
   # Epic 6: Testing, Quality & Documentation
