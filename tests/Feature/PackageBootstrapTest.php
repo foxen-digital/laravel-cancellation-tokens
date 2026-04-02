@@ -59,7 +59,8 @@ it('has expected config keys and defaults', function () {
         ->toBeArray()
         ->toHaveKey('table', 'cancellation_tokens')
         ->toHaveKey('prefix', 'ct_')
-        ->toHaveKey('default_expiry', 10080);
+        ->toHaveKey('default_expiry', 10080)
+        ->toHaveKey('hash_key');
 });
 
 it('creates the expected table schema', function () {

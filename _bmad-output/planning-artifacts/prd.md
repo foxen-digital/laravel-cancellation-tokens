@@ -44,7 +44,7 @@ The problem this solves is real and repeated: a user books, registers, or orders
 
 **Scope discipline.** The package does exactly one thing. It does not send emails, define routes, render views, or execute cancellations. Consuming applications own their business logic; this package owns the token.
 
-**Correct security model.** Tokens are HMAC-SHA256 hashed (keyed with `app.key`) before storage — matching Laravel's password reset approach. The plain-text token never persists. Single-use enforcement is first-class via `used_at`, not bolted on.
+**Correct security model.** Tokens are HMAC-SHA256 hashed (keyed with a dedicated `cancellation-tokens.hash_key`, isolated from `APP_KEY`) before storage. The plain-text token never persists. Single-use enforcement is first-class via `used_at`, not bolted on.
 
 **Self-contained lookup key.** The token record carries both the `tokenable` (who may cancel — polymorphic, any model) and the `cancellable` (what is being cancelled — polymorphic, any entity), making the token sufficient for full context resolution. This enables clean `/cancel/{token}` URLs with no entity ID in the path — a DX improvement that falls out naturally from the architecture and is unavailable in any ad-hoc implementation.
 
@@ -198,7 +198,7 @@ He swaps in `CancellationTokenFake` in his `TestCase` setup. It intercepts token
 
 **Self-contained lookup key via dual polymorphism.** Storing both `tokenable` (actor) and `cancellable` (subject) on a single token record makes the token sufficient for full context resolution at verification time. No ad-hoc implementation achieves this because they typically assume a single entity type and a `user_id` integer. Clean `/cancel/{token}` URLs fall out naturally from the architecture.
 
-**Security model parity with Laravel core.** HMAC-SHA256 keyed with `app.key` matches Laravel's password reset token approach. Most hand-rolled implementations store plain tokens or reach for bcrypt (too slow for lookups). Establishing this as the standard approach for cancellation tokens is itself an ecosystem contribution.
+**Security model parity with Laravel core.** HMAC-SHA256 keyed with a dedicated, configurable hash key (isolated from `APP_KEY`) matches and improves on Laravel's password reset token approach. Most hand-rolled implementations store plain tokens or reach for bcrypt (too slow for lookups). Establishing this as the standard approach for cancellation tokens is itself an ecosystem contribution.
 
 ### Competitive Landscape
 

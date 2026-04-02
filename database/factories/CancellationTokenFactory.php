@@ -14,8 +14,16 @@ class CancellationTokenFactory extends Factory
     {
         $plainToken = config('cancellation-tokens.prefix', 'ct_').Str::random(64);
 
+        $key = config('cancellation-tokens.hash_key');
+
+        if ($key === null || trim($key) === '') {
+            throw new \RuntimeException(
+                'A hash key must be configured via cancellation-tokens.hash_key before tokens can be created or verified.'
+            );
+        }
+
         return [
-            'token' => hash_hmac('sha256', $plainToken, config('app.key')),
+            'token' => hash_hmac('sha256', $plainToken, $key),
             'tokenable_type' => 'App\Models\User',
             'tokenable_id' => 1,
             'cancellable_type' => 'App\Models\Booking',

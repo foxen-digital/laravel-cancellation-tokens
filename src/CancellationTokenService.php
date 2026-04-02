@@ -115,6 +115,14 @@ class CancellationTokenService implements CancellationTokenContract
      */
     private function hashToken(string $plainToken): string
     {
-        return hash_hmac('sha256', $plainToken, config('app.key'));
+        $key = config('cancellation-tokens.hash_key');
+
+        if ($key === null || trim($key) === '') {
+            throw new \RuntimeException(
+                'A hash key must be configured via cancellation-tokens.hash_key before tokens can be created or verified.'
+            );
+        }
+
+        return hash_hmac('sha256', $plainToken, $key);
     }
 }

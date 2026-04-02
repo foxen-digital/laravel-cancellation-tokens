@@ -5,4 +5,5 @@ return [
     'table' => 'cancellation_tokens',
     'prefix' => 'ct_',
     'default_expiry' => 10080, // minutes — 7 days
+    'hash_key' => env('CANCELLATION_TOKEN_HASH_KEY'),
 ];

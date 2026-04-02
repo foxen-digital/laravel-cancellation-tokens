@@ -50,7 +50,7 @@ _This file contains critical rules and patterns that AI agents must follow when 
 - Readonly classes are used for events (PHP 8.2+) — all event classes must be declared `readonly`
 - Use `match` expressions (not `switch`) for exhaustive `TokenVerificationFailure` case handling — the type system enforces exhaustiveness
 - `Str::random(64)` is backed by `random_bytes()` — never use `rand()`, `mt_rand()`, or `uniqid()` for token entropy
-- Token hashing: always `hash_hmac('sha256', $plainToken, config('app.key'))` — bcrypt is explicitly prohibited for this use case
+- Token hashing: always `hash_hmac('sha256', $plainToken, config('cancellation-tokens.hash_key'))` — bcrypt is explicitly prohibited for this use case. The `hash_key` must be non-null and non-empty; `hashToken()` throws `RuntimeException` if not configured.
 - Token comparison: always `hash_equals($stored, $computed)` — never `===` or `==` on hash strings
 - Never store, log, or return the plain-text token after the initial `create()` return value
 - Config is accessed via `config('cancellation-tokens.key')` — never read `env()` directly inside the package
@@ -94,6 +94,7 @@ return [
     'table'          => 'cancellation_tokens',
     'prefix'         => 'ct_',
     'default_expiry' => 10080, // minutes — 7 days
+    'hash_key'       => env('CANCELLATION_TOKEN_HASH_KEY'),
 ];
 ```
 
@@ -195,6 +196,7 @@ CancellationTokenFake::assertNoTokensCreated(): void
 - Never store, log, cache, or return the plain-text token after `create()` returns it
 - Never use `bcrypt`, `password_hash()`, or any slow hash for token storage — HMAC-SHA256 only
 - Never read `env()` directly in package code — always `config('cancellation-tokens.*')`
+- Never use `config('app.key')` for token hashing — always `config('cancellation-tokens.hash_key')`
 - Never expose `TokenVerificationFailure` enum cases in HTTP responses — they are for internal developer use only (enumeration protection)
 
 **Service Contract Anti-Patterns:**

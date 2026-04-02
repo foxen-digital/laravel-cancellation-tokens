@@ -9,3 +9,4 @@ parameters:
         - database
         - tests/Fixtures
     tmpDir: build/phpstan
+    noEnvCallsOutsideOfConfig: false

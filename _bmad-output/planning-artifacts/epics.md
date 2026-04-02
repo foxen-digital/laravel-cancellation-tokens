@@ -317,7 +317,7 @@ So that I receive a plain-text token string to embed in URLs while the package h
 
 **Given** a token is created
 **When** the stored `token` column value is inspected
-**Then** it is an HMAC-SHA256 hash of the plain-text token keyed with `app.key` — the plain-text value is never in the database
+**Then** it is an HMAC-SHA256 hash of the plain-text token keyed with `cancellation-tokens.hash_key` — the plain-text value is never in the database
 
 **Given** a token is created
 **When** the return value of `create()` is inspected
@@ -328,8 +328,12 @@ So that I receive a plain-text token string to embed in URLs while the package h
 **Then** they are unique — no two tokens are identical
 
 **Given** a token is created
-**When** the plain-text token string is hashed with `hash_hmac('sha256', $plainToken, config('app.key'))`
+**When** the plain-text token string is hashed with `hash_hmac('sha256', $plainToken, config('cancellation-tokens.hash_key'))`
 **Then** the result matches the `token` column value stored in the database
+
+**Given** `cancellation-tokens.hash_key` is null or empty
+**When** `CancellationTokenService::create()` is called
+**Then** a `RuntimeException` is thrown with a message referencing `cancellation-tokens.hash_key`
 
 ---
 

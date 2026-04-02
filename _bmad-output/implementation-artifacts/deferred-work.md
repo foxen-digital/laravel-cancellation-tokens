@@ -1,5 +1,13 @@
 # Deferred Work
 
+## Deferred from: code review of hash-key-config-replacement (2026-04-02)
+
+- **No minimum hash_key length enforcement** — `hashToken()` rejects null/empty/whitespace but accepts any non-whitespace string including single-character keys. A trivially short key weakens HMAC. Enforcing a minimum length (e.g. 32 bytes) would be a deployment hardening measure. Address if security requirements demand it.
+
+## Deferred from: hash-key-config-replacement review (2026-04-02)
+
+- **No minimum-length enforcement on `hash_key`** — `hashToken()` rejects null/empty/whitespace but accepts trivially short keys (e.g. `"a"`). PHP's `hash_hmac` does not enforce minimum key length. Address if deployment hardening requirements arise.
+
 ## Deferred from: code review of 6-3-architecture-tests (2026-04-02)
 
 - **`toUse('hash_hmac')` cannot verify SHA-256 algorithm parameter** — pest-plugin-arch operates at function-usage level, not argument level; `hash_hmac('md5', ...)` would still pass this assertion. Would need a custom PHPStan rule to enforce the algorithm string. Pre-existing limitation.
@@ -9,7 +17,7 @@
 
 ## Deferred from: code review of 6-2-cancellationtokenfactory (2026-04-02)
 
-- **`app.key` passed raw to `hash_hmac` (includes `base64:` prefix)** — factory mirrors `CancellationTokenService::hashToken()` exactly; both use the raw value without decoding; consistent but reduces effective key entropy vs. decoded bytes. Pre-existing from Story 2.3.
+- ~~**`app.key` passed raw to `hash_hmac` (includes `base64:` prefix)**~~ — **Resolved 2026-04-02:** Replaced with dedicated `cancellation-tokens.hash_key` config. Consumer provides raw key material via `CANCELLATION_TOKEN_HASH_KEY` env var; no base64 prefix issue.
 - **Factory defaults `tokenable_type`/`cancellable_type` to non-existent `App\Models\User`/`App\Models\Booking`** — intentional per spec design decision #1 (placeholder strings satisfy the schema); consumers must use `->for()` when relation loading is needed; loading relations on default factory records will fail.
 - **`beforeEach` migration guard pattern fragile with `RefreshDatabase`** — `Schema::hasTable` guard may prevent re-running the migration after a rollback; pre-existing pattern shared across all feature tests.
 
@@ -60,7 +68,7 @@
 - **TOCTOU race condition in `consume()`** — `verify()` read and `$token->save()` are not atomic; two concurrent requests can both pass `verify()` before either sets `used_at`. No DB-level lock (`lockForUpdate()`) exists. Pre-existing architectural design; address only if concurrency safety requirements arise.
 - **SQL equality used for hash lookup in `verify()`, not `hash_equals()`** — `CancellationToken::where('token', $computedHash)->first()` compares hashes via DB `=`, not PHP `hash_equals()`. Spec prescribes this lookup strategy. Tracked in deferred issues for Story 2.4 as well.
 - **Returned model from `consume()` is in-memory only** — `used_at` is set on the PHP object and saved, but the returned instance is not refreshed from DB. DB-applied precision/casting differences (e.g. MySQL timestamp truncation) will not be reflected. Low risk; add `$token->refresh()` if strict round-trip fidelity is ever required.
-- **`app.key` empty/null silently accepted by `hash_hmac()`** — pre-existing from Story 2.3; HMAC runs with empty key without error; tests are internally consistent. Address if production-safe key handling becomes a requirement.
+- ~~**`app.key` empty/null silently accepted by `hash_hmac()`**~~ — **Resolved 2026-04-02:** `hashToken()` now throws `RuntimeException` when `cancellation-tokens.hash_key` is null or empty.
 - **Pruner deletes token between `verify()` and `save()` in `consume()`** — if model:prune runs in the narrow window between `verify()` returning and `save()` persisting `used_at`, the token may be deleted and `save()` silently re-inserts or updates 0 rows. Pre-existing architectural TOCTOU variant.
 
 ## Deferred from: code review of 2-4-token-verification (2026-04-01)
@@ -71,14 +79,14 @@
 - **Millisecond-precision expiry boundary** — token expiring at exactly `now()` may behave inconsistently across Carbon versions; system-level edge case, out of scope.
 - **Empty string `$plainToken` input not validated** — an empty string hashes and returns NotFound; add input validation if a future story introduces stricter API contracts.
 - **Orphaned tokenable/cancellable relationships not guarded** — `verify()` returns the model without checking related models still exist; lazy-load failure surfaces to the caller; deferred to a future story covering model lifecycle.
-- **App key rotation between creation and verification** — already tracked in Known Deferred Issues in the story; HMAC uses `config('app.key')` at runtime; key rotation silently invalidates all tokens.
+- **Hash key rotation between creation and verification** — HMAC uses `config('cancellation-tokens.hash_key')` at runtime; key rotation silently invalidates all tokens. Now scoped to `hash_key` (independent of `APP_KEY` rotation).
 - **`RefreshDatabase` + `Schema::hasTable` guards redundant but intentional** — pre-existing pattern from TokenCreationTest.php; no action needed unless the test setup strategy is revisited.
 - **`new CancellationTokenService` constructed directly in tests** — bypasses container DI; pre-existing convention; refactor if constructor gains dependencies.
 - **Timing oracle on DB token lookup** — querying `WHERE token = $computedHash` leaks hit-vs-miss timing; the spec prescribes this lookup strategy; a lookup-by-ID + hash-compare architecture would fully mitigate but is out of scope.
 
 ## Deferred from: code review of 2-3-token-creation (2026-03-28)
 
-- **`app.key` base64 prefix not stripped before HMAC** — `config('app.key')` returns the raw `base64:<encoded>` string; using it as the HMAC key reduces entropy vs. the decoded bytes. Deferred: future enhancement will introduce a dedicated configurable hash key instead of relying solely on `app.key`.
+- ~~**`app.key` base64 prefix not stripped before HMAC**~~ — **Resolved 2026-04-02:** Replaced with dedicated `cancellation-tokens.hash_key` config sourced from `CANCELLATION_TOKEN_HASH_KEY` env var. Consumer provides raw key material; no base64 prefix issue.
 
 ## Deferred from: code review of 2-2-cancellationtoken-eloquent-model (2026-03-28)
 

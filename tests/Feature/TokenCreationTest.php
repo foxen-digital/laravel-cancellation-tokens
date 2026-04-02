@@ -134,7 +134,7 @@ it('stores a hash that can be verified with hash_hmac', function () {
     $plainToken = $service->create($booking, $user);
 
     $storedHash = CancellationToken::where('cancellable_id', $booking->id)->value('token');
-    $computedHash = hash_hmac('sha256', $plainToken, config('app.key'));
+    $computedHash = hash_hmac('sha256', $plainToken, config('cancellation-tokens.hash_key'));
 
     expect(hash_equals($storedHash, $computedHash))->toBeTrue();
 });
@@ -201,4 +201,27 @@ it('never stores the plain-text token in the database', function () {
     $found = CancellationToken::where('token', $plainToken)->exists();
 
     expect($found)->toBeFalse();
+});
+
+// Hash key guard: throws RuntimeException when hash_key is not configured
+it('throws a runtime exception when hash_key is not configured', function () {
+    config()->set('cancellation-tokens.hash_key', null);
+
+    $service = new CancellationTokenService;
+    $user = TestUser::create();
+    $booking = TestBooking::create();
+
+    expect(fn () => $service->create($booking, $user))
+        ->toThrow(RuntimeException::class, 'cancellation-tokens.hash_key');
+});
+
+it('throws a runtime exception when hash_key is an empty string', function () {
+    config()->set('cancellation-tokens.hash_key', '');
+
+    $service = new CancellationTokenService;
+    $user = TestUser::create();
+    $booking = TestBooking::create();
+
+    expect(fn () => $service->create($booking, $user))
+        ->toThrow(RuntimeException::class, 'cancellation-tokens.hash_key');
 });

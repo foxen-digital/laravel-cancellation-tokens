@@ -29,6 +29,6 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-        config()->set('app.key', base64_encode(random_bytes(64)));
+        config()->set('cancellation-tokens.hash_key', base64_encode(random_bytes(64)));
     }
 }

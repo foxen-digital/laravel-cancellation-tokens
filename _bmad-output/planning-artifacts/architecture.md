@@ -47,7 +47,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 **Non-Functional Requirements:**
 
 - Performance: single DB write on create, single indexed lookup on verify (hash column), HMAC-SHA256 (bcrypt explicitly prohibited), chunked pruning
-- Security: no plain-text persistence ever, HMAC-SHA256 keyed with `APP_KEY`, `hash_equals()` mandatory, 64 bytes entropy post-prefix, failure reasons available internally but not distinguishable externally for enumeration protection
+- Security: no plain-text persistence ever, HMAC-SHA256 keyed with `cancellation-tokens.hash_key` (dedicated, isolated from `APP_KEY`), `hash_equals()` mandatory, 64 bytes entropy post-prefix, failure reasons available internally but not distinguishable externally for enumeration protection
 - Integration: PHP 8.3+, Laravel 12/13, no third-party dependencies, no morph map required, auto-discovery, no side effects without trait adoption
 - Quality: ≥95% line coverage, `CancellationTokenFactory` ships with package
 
@@ -68,7 +68,7 @@ _This document builds collaboratively through step-by-step discovery. Sections a
 
 ### Cross-Cutting Concerns Identified
 
-1. **Token hashing** — HMAC-SHA256 + `APP_KEY` used at creation and at every verification; must live in one place, used by service and fake alike
+1. **Token hashing** — HMAC-SHA256 + `cancellation-tokens.hash_key` used at creation and at every verification; must live in one place, used by service and fake alike
 2. **Polymorphic associations** — `tokenable` + `cancellable` morph columns cut across migration, model, trait, and facade
 3. **Shared contract (interface)** — `CancellationTokenFake` must satisfy the same interface as the real service to enable transparent test substitution
 4. **Error classification** — not-found / expired / consumed states must be a shared value type (enum) consumed by the service, validation rule, and event dispatcher
@@ -175,9 +175,9 @@ php configure.php
 
 **Token format:** `{prefix}{Str::random(64)}` — e.g. `ct_abc123...` (67 chars total at default prefix length). Prefix is configurable.
 
-**Storage:** Token is hashed immediately on creation via HMAC-SHA256 keyed with `APP_KEY`. The plain-text value is returned to the caller once and never persisted.
+**Storage:** Token is hashed immediately on creation via HMAC-SHA256 keyed with `cancellation-tokens.hash_key` (dedicated config, isolated from `APP_KEY`). The plain-text value is returned to the caller once and never persisted.
 
-**Verification:** `hash_equals(hash_hmac('sha256', $plainToken, config('app.key')), $storedHash)`
+**Verification:** `hash_equals(hash_hmac('sha256', $plainToken, config('cancellation-tokens.hash_key')), $storedHash)`
 
 ### Service Architecture
 
@@ -231,7 +231,7 @@ Consumed by the service layer, `ValidCancellationToken` rule (for failure reason
 - Enum → Service, Rule, Events (all depend on it)
 - Contract → Service, Fake, Facade (all depend on it)
 - Config → Service, Model, Factory, Migration (table name + prefix + expiry)
-- APP_KEY → Service hashing (runtime dependency, not package dependency)
+- `hash_key` config → Service hashing (runtime dependency, guarded against null/empty)
 
 ## Implementation Patterns & Consistency Rules
 
@@ -596,6 +596,7 @@ return [
     'table'          => 'cancellation_tokens',
     'prefix'         => 'ct_',
     'default_expiry' => 10080, // minutes — 7 days
+    'hash_key'       => env('CANCELLATION_TOKEN_HASH_KEY'),
 ];
 ```
 
